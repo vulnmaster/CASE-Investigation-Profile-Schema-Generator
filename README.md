@@ -34,15 +34,24 @@ case-schema-generator/
 │   ├── murder_investigation.py    # Murder investigation
 │   ├── child_abuse_investigation.py # Child abuse cases
 │   └── insider_threat_investigation.py # Insider threats
+├── stix/                          # STIX 2.1 reference for mapping
+│   └── stix_2_1_reference.py
 ├── investigation_schema_generator.py
-└── example_usage.py
+├── example_usage.py               # Example usage of the schema generator
+├── tests/                         # Test suite for the project
+│   ├── unit/
+│   │   └── test_base_config.py   # Unit tests for base configuration
+│   └── integration/
+│       └── test_schema_generator.py # Integration tests for schema generator
+└── docs/                          # Documentation for the project
+    └── user_manual.md             # User manual for the schema generator
 ```
 
 ## Quick Start
 
 1. Clone the repository:
 ```bash
-git clone https://github.com/yourusername/case-schema-generator.git
+git clone https://github.com/vulnmaster/case-schema-generator.git
 cd case-schema-generator
 ```
 
@@ -72,6 +81,72 @@ combined_schema = {
 # Save schema
 generator.save_schema(combined_schema, "combined_schema.json")
 ```
+
+## Generating Example Data
+
+The project includes scripts to generate example JSONL files that conform to the schemas:
+
+1. Generate schemas for all investigation types:
+```bash
+./scripts/generate_schemas.py
+```
+This will create schema files in the `schemas/` directory for each investigation type.
+
+2. Generate example JSONL files:
+```bash
+./scripts/generate_examples.py
+```
+This will create example files in the `examples/` directory:
+- `cyber_intrusion_examples.jsonl`: Cyber intrusion investigation examples
+- `murder_investigation_examples.jsonl`: Murder investigation examples
+- `child_abuse_examples.jsonl`: Child abuse investigation examples
+- `insider_threat_examples.jsonl`: Insider threat investigation examples
+
+### Adding Custom Examples
+
+You can add more examples to the JSONL files in two ways:
+
+1. Modify the generator functions in `scripts/generate_examples.py`:
+```python
+def generate_cyber_intrusion_examples() -> List[Dict]:
+    """Generate example cyber intrusion investigations"""
+    examples = []
+    timestamp = datetime.now().isoformat()
+    
+    # Add first example
+    examples.append({
+        "@id": "investigation-1",
+        "@type": "Investigation",
+        # ... other properties ...
+    })
+    
+    # Add your custom example
+    examples.append({
+        "@id": "investigation-custom",
+        "@type": "Investigation",
+        "name": "Your Custom Investigation",
+        # ... add required properties ...
+    })
+    
+    return examples
+```
+
+2. Manually append to the JSONL files:
+```bash
+# Each line should be a complete JSON object
+echo '{"@id": "investigation-custom", "@type": "Investigation", ...}' >> examples/cyber_intrusion_examples.jsonl
+```
+
+Each example must include the required properties:
+- `@context`: CASE/UCO context object
+- `@id`: Unique identifier
+- `@type`: Investigation type
+- `createdBy`: Identity that created the investigation
+- `name`: Investigation name
+- `objectCreatedTime`: Creation timestamp
+- `specVersion`: Version of UCO specification used
+
+The examples will be automatically validated against their respective schemas when generated.
 
 ## Investigation Types
 
@@ -164,4 +239,31 @@ Test reports are generated in two formats:
 1. JSON reports in the `reports/` directory
 2. HTML coverage reports in the `coverage/` directory
 
-To view the latest coverage report, open `coverage/index.html` in your browser after running the tests.
+To generate test reports:
+
+```bash
+# Install required packages
+pip install pytest pytest-cov coverage pytest-json-report
+
+# Generate both JSON and HTML reports
+python scripts/generate_test_report.py
+```
+
+The reports will be generated in:
+- `reports/test_report_<timestamp>.json`: Contains test execution summary, including:
+  - Test status
+  - Number of tests run
+  - Execution timestamp
+  - Path to coverage report
+
+- `coverage/index.html`: Interactive HTML coverage report with:
+  - Overall coverage statistics
+  - File-by-file coverage breakdown
+  - Line-by-line coverage analysis
+  - Branch coverage information
+
+To view the reports:
+1. JSON Report: Use any text editor to open `reports/test_report_<timestamp>.json`
+2. Coverage Report: Open `coverage/index.html` in your web browser
+
+These reports are also generated automatically by the CI pipeline on each push and pull request.

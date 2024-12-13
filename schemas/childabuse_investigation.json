@@ -1,0 +1,214 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "type": "object",
+  "properties": {
+    "@context": {
+      "type": "object",
+      "properties": {
+        "case": {
+          "type": "string",
+          "const": "https://ontology.caseontology.org/case/case"
+        },
+        "investigation": {
+          "type": "string",
+          "const": "https://ontology.caseontology.org/case/investigation"
+        },
+        "core": {
+          "type": "string",
+          "const": "https://ontology.unifiedcyberontology.org/uco/core"
+        },
+        "vocabulary": {
+          "type": "string",
+          "const": "https://ontology.caseontology.org/case/vocabulary"
+        },
+        "xsd": {
+          "type": "string",
+          "const": "http://www.w3.org/2001/XMLSchema#"
+        }
+      },
+      "required": [
+        "case",
+        "investigation",
+        "core",
+        "vocabulary",
+        "xsd"
+      ]
+    },
+    "@id": {
+      "type": "string",
+      "description": "Unique identifier for this object"
+    },
+    "@type": {
+      "type": "string",
+      "description": "The type of this object (from CASE vocabulary)"
+    },
+    "createdBy": {
+      "type": "object",
+      "description": "The identity that created this object",
+      "$ref": "#/definitions/core_IdentityAbstraction"
+    },
+    "description": {
+      "type": "string",
+      "description": "A description of this object"
+    },
+    "modifiedTime": {
+      "type": "string",
+      "description": "The time this object was last modified",
+      "$ref": "#/definitions/xsd_dateTime"
+    },
+    "name": {
+      "type": "string",
+      "description": "The name of this object",
+      "$ref": "#/definitions/string"
+    },
+    "objectCreatedTime": {
+      "type": "string",
+      "description": "When this object was created",
+      "$ref": "#/definitions/xsd_dateTime"
+    },
+    "specVersion": {
+      "type": "string",
+      "description": "Version of UCO ontology specification used"
+    },
+    "investigativeActions": {
+      "type": "array",
+      "items": {
+        "$ref": "#/definitions/investigation_InvestigativeAction"
+      },
+      "description": "Actions taken during the child abuse investigation"
+    },
+    "digitalEvidence": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "allOf": [
+          {
+            "$ref": "#/definitions/core_UcoObject"
+          },
+          {
+            "properties": {
+              "@type": {
+                "const": "case:DigitalEvidence"
+              },
+              "evidenceType": {
+                "type": "string"
+              },
+              "hash": {
+                "type": "string"
+              },
+              "classification": {
+                "type": "string"
+              }
+            }
+          }
+        ]
+      },
+      "description": "Digital evidence collected during investigation"
+    }
+  },
+  "required": [
+    "@context",
+    "@id",
+    "@type",
+    "createdBy",
+    "name",
+    "objectCreatedTime",
+    "specVersion"
+  ],
+  "definitions": {
+    "core_UcoObject": {
+      "type": "object",
+      "description": "Base object that all UCO objects inherit from",
+      "properties": {
+        "@id": {
+          "type": "string"
+        },
+        "@type": {
+          "type": "string"
+        },
+        "createdBy": {
+          "$ref": "#/definitions/core_IdentityAbstraction"
+        },
+        "description": {
+          "type": "string"
+        },
+        "modifiedTime": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "name": {
+          "type": "string"
+        },
+        "objectCreatedTime": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "specVersion": {
+          "type": "string"
+        }
+      },
+      "required": [
+        "@id",
+        "@type",
+        "objectCreatedTime",
+        "specVersion"
+      ]
+    },
+    "core_IdentityAbstraction": {
+      "type": "object",
+      "description": "A grouping of identifying characteristics unique to an individual or organization",
+      "allOf": [
+        {
+          "$ref": "#/definitions/core_UcoObject"
+        },
+        {
+          "properties": {
+            "@type": {
+              "const": "core:IdentityAbstraction"
+            },
+            "createdBy": {
+              "$ref": "#/definitions/core_IdentityAbstraction"
+            }
+          }
+        }
+      ]
+    },
+    "investigation_InvestigativeAction": {
+      "type": "object",
+      "description": "An investigative action performed during the investigation",
+      "allOf": [
+        {
+          "$ref": "#/definitions/core_UcoObject"
+        },
+        {
+          "properties": {
+            "@type": {
+              "const": "investigation:InvestigativeAction"
+            },
+            "startTime": {
+              "type": "string",
+              "format": "date-time"
+            },
+            "endTime": {
+              "type": "string",
+              "format": "date-time"
+            },
+            "status": {
+              "type": "string"
+            },
+            "authorizationIdentifier": {
+              "type": "string"
+            }
+          }
+        }
+      ]
+    },
+    "string": {
+      "type": "string"
+    },
+    "xsd_dateTime": {
+      "type": "string",
+      "format": "date-time"
+    }
+  }
+}
