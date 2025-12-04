@@ -11,8 +11,13 @@ Examples include:
 4. Saving schemas to files
 """
 
-from case_investigation_schema_generator.investigation_schema_generator import CaseSchemaGenerator, InvestigationType
-from case_investigation_schema_generator.investigation_types.case_investigation import CaseInvestigationConfig
+from case_investigation_schema_generator.investigation_schema_generator import (
+    CaseSchemaGenerator,
+    InvestigationType,
+)
+from case_investigation_schema_generator.investigation_types.case_investigation import (
+    CaseInvestigationConfig,
+)
 
 
 def generate_basic_schema():
