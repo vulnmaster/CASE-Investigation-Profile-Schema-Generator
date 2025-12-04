@@ -24,7 +24,7 @@ def generate_basic_schema():
     """Generate a basic CASE investigation schema"""
     generator = CaseSchemaGenerator()
     investigation_schema = generator.generate_investigation_schema(
-        CaseInvestigationConfig()
+        InvestigationType.CASE_INVESTIGATION
     )
     generator.save_schema(investigation_schema, "basic_investigation_schema.json")
 
@@ -44,7 +44,7 @@ def generate_combined_schema():
 
     # Generate base investigation schema
     investigation_schema = generator.generate_investigation_schema(
-        CaseInvestigationConfig()
+        InvestigationType.CASE_INVESTIGATION
     )
 
     # Generate specific investigation type schema

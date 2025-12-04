@@ -29,6 +29,7 @@ from dataclasses import dataclass
 from enum import Enum
 from typing import Dict, List, Optional
 
+from .investigation_types.case_investigation import CaseInvestigationConfig
 from .investigation_types.child_abuse_investigation import ChildAbuseConfig
 from .investigation_types.cyber_intrusion import CyberIntrusionConfig
 from .investigation_types.insider_threat_investigation import InsiderThreatConfig
@@ -40,6 +41,7 @@ class InvestigationType(Enum):
     MURDER = "Murder"
     CHILD_ABUSE = "ChildAbuse"
     INSIDER_THREAT = "InsiderThreat"
+    CASE_INVESTIGATION = "CaseInvestigation"
 
 
 @dataclass
@@ -112,6 +114,7 @@ class CaseSchemaGenerator:
             InvestigationType.MURDER: MurderConfig(),
             InvestigationType.CHILD_ABUSE: ChildAbuseConfig(),
             InvestigationType.INSIDER_THREAT: InsiderThreatConfig(),
+            InvestigationType.CASE_INVESTIGATION: CaseInvestigationConfig(),
         }
 
     def generate_investigation_schema(
@@ -181,6 +184,8 @@ class CaseSchemaGenerator:
             self._add_child_abuse_properties(properties)
         elif investigation_type == InvestigationType.INSIDER_THREAT:
             self._add_insider_threat_properties(properties)
+        elif investigation_type == InvestigationType.CASE_INVESTIGATION:
+            self._add_case_investigation_properties(properties)
 
         schema["properties"].update(properties)
         schema["required"] = required
@@ -382,6 +387,38 @@ class CaseSchemaGenerator:
                         ],
                     },
                     "description": "System monitoring data collected during investigation",
+                },
+            }
+        )
+
+    def _add_case_investigation_properties(self, properties: Dict):
+        """Add properties specific to generic case investigations"""
+        # Base properties are already added by core_properties,
+        # here we can add generic investigation properties if needed
+        properties.update(
+            {
+                "investigativeActions": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/investigation_InvestigativeAction"
+                    },
+                    "description": "Actions taken during the investigation",
+                },
+                "subjects": {
+                    "type": "array",
+                    "items": {
+                        "type": "object",
+                        "allOf": [
+                            {"$ref": "#/definitions/core_UcoObject"},
+                            {
+                                "properties": {
+                                    "@type": {"const": "core:Identity"},
+                                    "identityType": {"type": "string"},
+                                }
+                            },
+                        ],
+                    },
+                    "description": "Subjects involved in the investigation",
                 },
             }
         )
