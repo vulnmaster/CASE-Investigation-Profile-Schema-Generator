@@ -13,12 +13,12 @@ from .insider_threat_investigation import InsiderThreatConfig
 from .case_investigation import CaseInvestigationConfig
 
 __all__ = [
-    'CaseClass',
-    'CaseProperty',
-    'BaseInvestigationType',
-    'CyberIntrusionConfig',
-    'MurderConfig',
-    'ChildAbuseConfig',
-    'InsiderThreatConfig',
-    'CaseInvestigationConfig'
-] 
+    "CaseClass",
+    "CaseProperty",
+    "BaseInvestigationType",
+    "CyberIntrusionConfig",
+    "MurderConfig",
+    "ChildAbuseConfig",
+    "InsiderThreatConfig",
+    "CaseInvestigationConfig",
+]
