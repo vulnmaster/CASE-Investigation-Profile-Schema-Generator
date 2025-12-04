@@ -6,11 +6,12 @@ Generates example JSONL files with data conforming to each investigation type sc
 Also validates the generated examples against their respective schemas.
 """
 
-import os
 import json
-import jsonschema
+import os
 from datetime import datetime, timedelta
 from typing import Dict, List
+
+import jsonschema
 
 
 def load_schema(schema_path: str) -> Dict:

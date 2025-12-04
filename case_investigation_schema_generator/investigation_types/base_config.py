@@ -4,7 +4,7 @@ Defines common structures and utilities used across all investigation types.
 """
 
 from dataclasses import dataclass
-from typing import List, Optional, Dict
+from typing import Dict, List, Optional
 
 
 @dataclass

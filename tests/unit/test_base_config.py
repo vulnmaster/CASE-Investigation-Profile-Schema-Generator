@@ -1,8 +1,9 @@
 import pytest
+
 from case_investigation_schema_generator.investigation_types.base_config import (
+    BaseInvestigationType,
     CaseClass,
     CaseProperty,
-    BaseInvestigationType,
 )
 
 

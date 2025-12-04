@@ -4,11 +4,11 @@ Test Report Generator for CASE Investigation Schema Generator.
 Generates detailed test reports including coverage, test results, and validation status.
 """
 
-import os
-import sys
-import json
 import datetime
+import json
+import os
 import subprocess
+import sys
 from pathlib import Path
 
 

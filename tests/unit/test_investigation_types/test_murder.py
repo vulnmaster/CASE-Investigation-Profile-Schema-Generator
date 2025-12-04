@@ -1,4 +1,5 @@
 import pytest
+
 from case_investigation_schema_generator.investigation_types.murder_investigation import (
     MurderConfig,
 )

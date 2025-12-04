@@ -1,8 +1,10 @@
 """Unit tests for schema generator"""
 
-import os
 import json
+import os
+
 import pytest
+
 from case_investigation_schema_generator import CaseSchemaGenerator, InvestigationType
 
 

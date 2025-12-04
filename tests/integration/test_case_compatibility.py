@@ -1,7 +1,8 @@
 """Integration tests for CASE ontology compatibility"""
 
 import pytest
-from rdflib import Graph, URIRef, Namespace
+from rdflib import Graph, Namespace, URIRef
+
 from case_investigation_schema_generator import CaseSchemaGenerator, InvestigationType
 
 # Constants for namespace URIs

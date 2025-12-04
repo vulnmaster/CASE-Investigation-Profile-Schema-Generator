@@ -1,8 +1,10 @@
 """Validation tests for JSON Schema compliance"""
 
-import pytest
 import json
-from jsonschema import validate, Draft7Validator, ValidationError
+
+import pytest
+from jsonschema import Draft7Validator, ValidationError, validate
+
 from case_investigation_schema_generator import CaseSchemaGenerator, InvestigationType
 
 

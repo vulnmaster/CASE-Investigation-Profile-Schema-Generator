@@ -1,4 +1,5 @@
 import pytest
+
 from case_investigation_schema_generator.investigation_types.cyber_intrusion import (
     CyberIntrusionConfig,
 )

@@ -1,9 +1,11 @@
 """Tests for JSON-RDF data conversion and semantic preservation"""
 
-import pytest
-from rdflib import Graph, URIRef, Literal, Namespace
-from rdflib.namespace import RDF, XSD
 import json
+
+import pytest
+from rdflib import Graph, Literal, Namespace, URIRef
+from rdflib.namespace import RDF, XSD
+
 from case_investigation_schema_generator import CaseSchemaGenerator, InvestigationType
 
 # Define namespaces

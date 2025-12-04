@@ -24,14 +24,15 @@ Author: Cpry Hall, Cyber Domain Ontology Project
 License: Apache 2.0
 """
 
-from typing import Dict, List, Optional
 import json
-from enum import Enum
 from dataclasses import dataclass
-from .investigation_types.cyber_intrusion import CyberIntrusionConfig
-from .investigation_types.murder_investigation import MurderConfig
+from enum import Enum
+from typing import Dict, List, Optional
+
 from .investigation_types.child_abuse_investigation import ChildAbuseConfig
+from .investigation_types.cyber_intrusion import CyberIntrusionConfig
 from .investigation_types.insider_threat_investigation import InsiderThreatConfig
+from .investigation_types.murder_investigation import MurderConfig
 
 
 class InvestigationType(Enum):

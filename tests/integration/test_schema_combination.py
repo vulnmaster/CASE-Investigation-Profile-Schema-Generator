@@ -1,6 +1,7 @@
 """Integration tests for schema combination functionality"""
 
 import pytest
+
 from case_investigation_schema_generator import CaseSchemaGenerator, InvestigationType
 
 

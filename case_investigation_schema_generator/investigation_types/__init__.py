@@ -5,12 +5,12 @@ This package contains the configuration classes for different types of investiga
 supported by the CASE Investigation Schema Generator.
 """
 
-from .base_config import CaseClass, CaseProperty, BaseInvestigationType
-from .cyber_intrusion import CyberIntrusionConfig
-from .murder_investigation import MurderConfig
-from .child_abuse_investigation import ChildAbuseConfig
-from .insider_threat_investigation import InsiderThreatConfig
+from .base_config import BaseInvestigationType, CaseClass, CaseProperty
 from .case_investigation import CaseInvestigationConfig
+from .child_abuse_investigation import ChildAbuseConfig
+from .cyber_intrusion import CyberIntrusionConfig
+from .insider_threat_investigation import InsiderThreatConfig
+from .murder_investigation import MurderConfig
 
 __all__ = [
     "CaseClass",

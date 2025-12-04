@@ -5,8 +5,9 @@ Schema Generator Script
 Generates JSON schemas for each investigation type and saves them to the schemas directory.
 """
 
-import os
 import json
+import os
+
 from case_investigation_schema_generator import CaseSchemaGenerator, InvestigationType
 
 
