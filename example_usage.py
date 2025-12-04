@@ -11,44 +11,59 @@ Examples include:
 4. Saving schemas to files
 """
 
-from investigation_schema_generator import CaseSchemaGenerator, InvestigationType
-from investigation_types.case_investigation import CaseInvestigationConfig
+from case_investigation_schema_generator.investigation_schema_generator import (
+    CaseSchemaGenerator,
+    InvestigationType,
+)
+from case_investigation_schema_generator.investigation_types.case_investigation import (
+    CaseInvestigationConfig,
+)
+
 
 def generate_basic_schema():
     """Generate a basic CASE investigation schema"""
     generator = CaseSchemaGenerator()
-    investigation_schema = generator.generate_investigation_schema(CaseInvestigationConfig())
+    investigation_schema = generator.generate_investigation_schema(
+        InvestigationType.CASE_INVESTIGATION
+    )
     generator.save_schema(investigation_schema, "basic_investigation_schema.json")
+
 
 def generate_cyber_intrusion_schema():
     """Generate a cyber intrusion specific schema"""
     generator = CaseSchemaGenerator()
-    cyber_schema = generator.generate_investigation_schema(InvestigationType.CYBER_INTRUSION)
+    cyber_schema = generator.generate_investigation_schema(
+        InvestigationType.CYBER_INTRUSION
+    )
     generator.save_schema(cyber_schema, "cyber_intrusion_schema.json")
+
 
 def generate_combined_schema():
     """Generate a combined schema with base investigation and specific type"""
     generator = CaseSchemaGenerator()
-    
+
     # Generate base investigation schema
-    investigation_schema = generator.generate_investigation_schema(CaseInvestigationConfig())
-    
+    investigation_schema = generator.generate_investigation_schema(
+        InvestigationType.CASE_INVESTIGATION
+    )
+
     # Generate specific investigation type schema
     murder_schema = generator.generate_investigation_schema(InvestigationType.MURDER)
-    
+
     # Combine schemas
     combined_schema = {
         **investigation_schema,
         "definitions": {
             **investigation_schema["definitions"],
-            **murder_schema["definitions"]
-        }
+            **murder_schema["definitions"],
+        },
     }
-    
+
     generator.save_schema(combined_schema, "combined_murder_schema.json")
+
 
 if __name__ == "__main__":
     # Example usage
     generate_basic_schema()
     generate_cyber_intrusion_schema()
-    generate_combined_schema() 
+    generate_combined_schema()

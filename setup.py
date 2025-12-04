@@ -1,13 +1,10 @@
-from setuptools import setup, find_packages
+from setuptools import find_packages, setup
 
 setup(
     name="case-investigation-schema-generator",
     version="0.1.0",
     packages=find_packages(),
-    install_requires=[
-        "jsonschema>=4.21.1",
-        "rdflib>=7.0.0"
-    ],
+    install_requires=["jsonschema>=4.21.1", "rdflib>=7.0.0"],
     extras_require={
         "test": [
             "pytest>=8.3.4",
@@ -33,4 +30,4 @@ setup(
         "Programming Language :: Python :: 3.11",
         "Programming Language :: Python :: 3.12",
     ],
-) 
+)

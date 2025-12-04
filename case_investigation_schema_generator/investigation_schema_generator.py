@@ -24,20 +24,25 @@ Author: Cpry Hall, Cyber Domain Ontology Project
 License: Apache 2.0
 """
 
-from typing import Dict, List, Optional
 import json
-from enum import Enum
 from dataclasses import dataclass
-from .investigation_types.cyber_intrusion import CyberIntrusionConfig
-from .investigation_types.murder_investigation import MurderConfig
+from enum import Enum
+from typing import Dict, List, Optional
+
+from .investigation_types.case_investigation import CaseInvestigationConfig
 from .investigation_types.child_abuse_investigation import ChildAbuseConfig
+from .investigation_types.cyber_intrusion import CyberIntrusionConfig
 from .investigation_types.insider_threat_investigation import InsiderThreatConfig
+from .investigation_types.murder_investigation import MurderConfig
+
 
 class InvestigationType(Enum):
     CYBER_INTRUSION = "CyberIntrusion"
-    MURDER = "Murder" 
+    MURDER = "Murder"
     CHILD_ABUSE = "ChildAbuse"
     INSIDER_THREAT = "InsiderThreat"
+    CASE_INVESTIGATION = "CaseInvestigation"
+
 
 @dataclass
 class CaseProperty:
@@ -47,6 +52,7 @@ class CaseProperty:
     required: bool = False
     range: Optional[str] = None
 
+
 class CaseSchemaGenerator:
     def __init__(self):
         # Core properties from CASE/UCO that most objects inherit
@@ -55,64 +61,67 @@ class CaseSchemaGenerator:
                 name="@id",
                 property_type="string",
                 description="Unique identifier for this object",
-                required=True
+                required=True,
             ),
             CaseProperty(
-                name="@type", 
+                name="@type",
                 property_type="string",
                 description="The type of this object (from CASE vocabulary)",
-                required=True
+                required=True,
             ),
             CaseProperty(
                 name="createdBy",
                 property_type="object",
                 description="The identity that created this object",
                 required=True,
-                range="core:IdentityAbstraction"
+                range="core:IdentityAbstraction",
             ),
             CaseProperty(
                 name="description",
-                property_type="string", 
-                description="A description of this object"
+                property_type="string",
+                description="A description of this object",
             ),
             CaseProperty(
                 name="modifiedTime",
                 property_type="string",
                 description="The time this object was last modified",
-                range="xsd:dateTime"
+                range="xsd:dateTime",
             ),
             CaseProperty(
                 name="name",
                 property_type="string",
                 description="The name of this object",
                 required=True,
-                range="string"
+                range="string",
             ),
             CaseProperty(
                 name="objectCreatedTime",
                 property_type="string",
                 description="When this object was created",
                 required=True,
-                range="xsd:dateTime"
+                range="xsd:dateTime",
             ),
             CaseProperty(
                 name="specVersion",
                 property_type="string",
                 description="Version of UCO ontology specification used",
-                required=True
-            )
+                required=True,
+            ),
         ]
 
         self.investigation_configs = {
             InvestigationType.CYBER_INTRUSION: CyberIntrusionConfig(),
             InvestigationType.MURDER: MurderConfig(),
             InvestigationType.CHILD_ABUSE: ChildAbuseConfig(),
-            InvestigationType.INSIDER_THREAT: InsiderThreatConfig()
+            InvestigationType.INSIDER_THREAT: InsiderThreatConfig(),
+            InvestigationType.CASE_INVESTIGATION: CaseInvestigationConfig(),
         }
 
-    def generate_investigation_schema(self, investigation_type: InvestigationType) -> Dict:
+    def generate_investigation_schema(
+        self, investigation_type: InvestigationType
+    ) -> Dict:
         """Generate a JSON schema for the specified investigation type"""
-        
+
         schema = {
             "$schema": "http://json-schema.org/draft-07/schema#",
             "type": "object",
@@ -120,17 +129,32 @@ class CaseSchemaGenerator:
                 "@context": {
                     "type": "object",
                     "properties": {
-                        "case": {"type": "string", "const": "https://ontology.caseontology.org/case/case"},
-                        "investigation": {"type": "string", "const": "https://ontology.caseontology.org/case/investigation"},
-                        "core": {"type": "string", "const": "https://ontology.unifiedcyberontology.org/uco/core"},
-                        "vocabulary": {"type": "string", "const": "https://ontology.caseontology.org/case/vocabulary"},
-                        "xsd": {"type": "string", "const": "http://www.w3.org/2001/XMLSchema#"}
+                        "case": {
+                            "type": "string",
+                            "const": "https://ontology.caseontology.org/case/case",
+                        },
+                        "investigation": {
+                            "type": "string",
+                            "const": "https://ontology.caseontology.org/case/investigation",
+                        },
+                        "core": {
+                            "type": "string",
+                            "const": "https://ontology.unifiedcyberontology.org/uco/core",
+                        },
+                        "vocabulary": {
+                            "type": "string",
+                            "const": "https://ontology.caseontology.org/case/vocabulary",
+                        },
+                        "xsd": {
+                            "type": "string",
+                            "const": "http://www.w3.org/2001/XMLSchema#",
+                        },
                     },
-                    "required": ["case", "investigation", "core", "vocabulary", "xsd"]
+                    "required": ["case", "investigation", "core", "vocabulary", "xsd"],
                 }
             },
             "required": ["@context"],
-            "definitions": self._generate_base_definitions()
+            "definitions": self._generate_base_definitions(),
         }
 
         # Add core properties
@@ -139,11 +163,13 @@ class CaseSchemaGenerator:
         for prop in self.core_properties:
             properties[prop.name] = {
                 "type": prop.property_type,
-                "description": prop.description
+                "description": prop.description,
             }
             if prop.range:
                 if ":" in prop.range:
-                    properties[prop.name]["$ref"] = f"#/definitions/{prop.range.replace(':', '_')}"
+                    properties[prop.name][
+                        "$ref"
+                    ] = f"#/definitions/{prop.range.replace(':', '_')}"
                 else:
                     properties[prop.name]["$ref"] = f"#/definitions/{prop.range}"
             if prop.required:
@@ -158,10 +184,12 @@ class CaseSchemaGenerator:
             self._add_child_abuse_properties(properties)
         elif investigation_type == InvestigationType.INSIDER_THREAT:
             self._add_insider_threat_properties(properties)
+        elif investigation_type == InvestigationType.CASE_INVESTIGATION:
+            self._add_case_investigation_properties(properties)
 
         schema["properties"].update(properties)
         schema["required"] = required
-        
+
         return schema
 
     def _generate_base_definitions(self) -> Dict:
@@ -178,9 +206,9 @@ class CaseSchemaGenerator:
                     "modifiedTime": {"type": "string", "format": "date-time"},
                     "name": {"type": "string"},
                     "objectCreatedTime": {"type": "string", "format": "date-time"},
-                    "specVersion": {"type": "string"}
+                    "specVersion": {"type": "string"},
                 },
-                "required": ["@id", "@type", "objectCreatedTime", "specVersion"]
+                "required": ["@id", "@type", "objectCreatedTime", "specVersion"],
             },
             "core_IdentityAbstraction": {
                 "type": "object",
@@ -190,10 +218,12 @@ class CaseSchemaGenerator:
                     {
                         "properties": {
                             "@type": {"const": "core:IdentityAbstraction"},
-                            "createdBy": {"$ref": "#/definitions/core_IdentityAbstraction"}
+                            "createdBy": {
+                                "$ref": "#/definitions/core_IdentityAbstraction"
+                            },
                         }
-                    }
-                ]
+                    },
+                ],
             },
             "investigation_InvestigativeAction": {
                 "type": "object",
@@ -206,151 +236,194 @@ class CaseSchemaGenerator:
                             "startTime": {"type": "string", "format": "date-time"},
                             "endTime": {"type": "string", "format": "date-time"},
                             "status": {"type": "string"},
-                            "authorizationIdentifier": {"type": "string"}
+                            "authorizationIdentifier": {"type": "string"},
                         }
-                    }
-                ]
-            }
+                    },
+                ],
+            },
         }
 
     def _add_cyber_intrusion_properties(self, properties: Dict):
         """Add properties specific to cyber intrusion investigations"""
-        properties.update({
-            "investigativeActions": {
-                "type": "array",
-                "items": {
-                    "$ref": "#/definitions/investigation_InvestigativeAction"
+        properties.update(
+            {
+                "investigativeActions": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/investigation_InvestigativeAction"
+                    },
+                    "description": "Actions taken during the cyber intrusion investigation",
                 },
-                "description": "Actions taken during the cyber intrusion investigation"
-            },
-            "observables": {
-                "type": "array", 
-                "items": {
-                    "type": "object",
-                    "allOf": [
-                        {"$ref": "#/definitions/core_UcoObject"},
-                        {
-                            "properties": {
-                                "@type": {"const": "observable:CyberItem"},
-                                "observableType": {"type": "string"},
-                                "hasChanged": {"type": "boolean"},
-                                "state": {"type": "string"}
-                            }
-                        }
-                    ]
+                "observables": {
+                    "type": "array",
+                    "items": {
+                        "type": "object",
+                        "allOf": [
+                            {"$ref": "#/definitions/core_UcoObject"},
+                            {
+                                "properties": {
+                                    "@type": {"const": "observable:CyberItem"},
+                                    "observableType": {"type": "string"},
+                                    "hasChanged": {"type": "boolean"},
+                                    "state": {"type": "string"},
+                                }
+                            },
+                        ],
+                    },
+                    "description": "Digital artifacts observed during investigation",
                 },
-                "description": "Digital artifacts observed during investigation"
-            },
-            "subjects": {
-                "type": "array",
-                "items": {
-                    "type": "object",
-                    "allOf": [
-                        {"$ref": "#/definitions/core_UcoObject"},
-                        {
-                            "properties": {
-                                "@type": {"const": "core:Identity"},
-                                "identityType": {"type": "string"},
-                                "role": {"type": "string"}
-                            }
-                        }
-                    ]
+                "subjects": {
+                    "type": "array",
+                    "items": {
+                        "type": "object",
+                        "allOf": [
+                            {"$ref": "#/definitions/core_UcoObject"},
+                            {
+                                "properties": {
+                                    "@type": {"const": "core:Identity"},
+                                    "identityType": {"type": "string"},
+                                    "role": {"type": "string"},
+                                }
+                            },
+                        ],
+                    },
+                    "description": "Subjects involved in the investigation",
                 },
-                "description": "Subjects involved in the investigation"
             }
-        })
+        )
 
     def _add_murder_properties(self, properties: Dict):
         """Add properties specific to murder investigations"""
-        properties.update({
-            "investigativeActions": {
-                "type": "array",
-                "items": {
-                    "$ref": "#/definitions/investigation_InvestigativeAction"
+        properties.update(
+            {
+                "investigativeActions": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/investigation_InvestigativeAction"
+                    },
+                    "description": "Actions taken during the murder investigation",
                 },
-                "description": "Actions taken during the murder investigation"
-            },
-            "physicalEvidence": {
-                "type": "array",
-                "items": {
-                    "type": "object",
-                    "allOf": [
-                        {"$ref": "#/definitions/core_UcoObject"},
-                        {
-                            "properties": {
-                                "@type": {"const": "case:PhysicalEvidence"},
-                                "evidenceType": {"type": "string"},
-                                "location": {"type": "string"},
-                                "condition": {"type": "string"}
-                            }
-                        }
-                    ]
+                "physicalEvidence": {
+                    "type": "array",
+                    "items": {
+                        "type": "object",
+                        "allOf": [
+                            {"$ref": "#/definitions/core_UcoObject"},
+                            {
+                                "properties": {
+                                    "@type": {"const": "case:PhysicalEvidence"},
+                                    "evidenceType": {"type": "string"},
+                                    "location": {"type": "string"},
+                                    "condition": {"type": "string"},
+                                }
+                            },
+                        ],
+                    },
+                    "description": "Physical evidence collected during investigation",
                 },
-                "description": "Physical evidence collected during investigation"
             }
-        })
+        )
 
     def _add_child_abuse_properties(self, properties: Dict):
         """Add properties specific to child abuse investigations"""
-        properties.update({
-            "investigativeActions": {
-                "type": "array",
-                "items": {
-                    "$ref": "#/definitions/investigation_InvestigativeAction"
+        properties.update(
+            {
+                "investigativeActions": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/investigation_InvestigativeAction"
+                    },
+                    "description": "Actions taken during the child abuse investigation",
                 },
-                "description": "Actions taken during the child abuse investigation"
-            },
-            "digitalEvidence": {
-                "type": "array",
-                "items": {
-                    "type": "object",
-                    "allOf": [
-                        {"$ref": "#/definitions/core_UcoObject"},
-                        {
-                            "properties": {
-                                "@type": {"const": "case:DigitalEvidence"},
-                                "evidenceType": {"type": "string"},
-                                "hash": {"type": "string"},
-                                "classification": {"type": "string"}
-                            }
-                        }
-                    ]
+                "digitalEvidence": {
+                    "type": "array",
+                    "items": {
+                        "type": "object",
+                        "allOf": [
+                            {"$ref": "#/definitions/core_UcoObject"},
+                            {
+                                "properties": {
+                                    "@type": {"const": "case:DigitalEvidence"},
+                                    "evidenceType": {"type": "string"},
+                                    "hash": {"type": "string"},
+                                    "classification": {"type": "string"},
+                                }
+                            },
+                        ],
+                    },
+                    "description": "Digital evidence collected during investigation",
                 },
-                "description": "Digital evidence collected during investigation"
             }
-        })
+        )
 
     def _add_insider_threat_properties(self, properties: Dict):
         """Add properties specific to insider threat investigations"""
-        properties.update({
-            "investigativeActions": {
-                "type": "array",
-                "items": {
-                    "$ref": "#/definitions/investigation_InvestigativeAction"
+        properties.update(
+            {
+                "investigativeActions": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/investigation_InvestigativeAction"
+                    },
+                    "description": "Actions taken during the insider threat investigation",
                 },
-                "description": "Actions taken during the insider threat investigation"
-            },
-            "systemMonitoring": {
-                "type": "array",
-                "items": {
-                    "type": "object",
-                    "allOf": [
-                        {"$ref": "#/definitions/core_UcoObject"},
-                        {
-                            "properties": {
-                                "@type": {"const": "case:SystemMonitoring"},
-                                "monitoringType": {"type": "string"},
-                                "timestamp": {"type": "string", "format": "date-time"},
-                                "activity": {"type": "string"}
-                            }
-                        }
-                    ]
+                "systemMonitoring": {
+                    "type": "array",
+                    "items": {
+                        "type": "object",
+                        "allOf": [
+                            {"$ref": "#/definitions/core_UcoObject"},
+                            {
+                                "properties": {
+                                    "@type": {"const": "case:SystemMonitoring"},
+                                    "monitoringType": {"type": "string"},
+                                    "timestamp": {
+                                        "type": "string",
+                                        "format": "date-time",
+                                    },
+                                    "activity": {"type": "string"},
+                                }
+                            },
+                        ],
+                    },
+                    "description": "System monitoring data collected during investigation",
                 },
-                "description": "System monitoring data collected during investigation"
             }
-        })
+        )
+
+    def _add_case_investigation_properties(self, properties: Dict):
+        """Add properties specific to generic case investigations"""
+        # Base properties are already added by core_properties,
+        # here we can add generic investigation properties if needed
+        properties.update(
+            {
+                "investigativeActions": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/investigation_InvestigativeAction"
+                    },
+                    "description": "Actions taken during the investigation",
+                },
+                "subjects": {
+                    "type": "array",
+                    "items": {
+                        "type": "object",
+                        "allOf": [
+                            {"$ref": "#/definitions/core_UcoObject"},
+                            {
+                                "properties": {
+                                    "@type": {"const": "core:Identity"},
+                                    "identityType": {"type": "string"},
+                                }
+                            },
+                        ],
+                    },
+                    "description": "Subjects involved in the investigation",
+                },
+            }
+        )
 
     def save_schema(self, schema: Dict, filename: str):
         """Save the generated schema to a file"""
-        with open(filename, 'w') as f:
-            json.dump(schema, f, indent=2) 
+        with open(filename, "w") as f:
+            json.dump(schema, f, indent=2)
